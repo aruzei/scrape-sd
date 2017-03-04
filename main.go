@@ -1,12 +1,16 @@
 package main
 
-import "scrape-sd.local/browser"
+import (
+	"scrape-sd.local/showdown"
+	"scrape-sd.local/util"
+)
 
 func main() {
-	browser := browser.CreateChrome()
-	defer browser.Stop()
+	battleRoom := showdown.NewBattleRoom()
+	defer battleRoom.Browser.Stop()
 
-	browser.NavigatePage("http://play.pokemonshowdown.com/battles")
+	links := battleRoom.Scrape()
 
-	browser.Screenshot("./.debug/debug.jpg")
+	util.FlushAsCSV(links, "./.debug/links.csv")
+	battleRoom.Browser.Screenshot("./.debug/debug.jpg")
 }
