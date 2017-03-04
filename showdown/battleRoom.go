@@ -1,6 +1,7 @@
 package showdown
 
 import (
+	"math"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -40,4 +41,52 @@ func (room *BattleRoom) Scrape() []BattleLink {
 
 	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
 	return scrapeBattleLinks(doc)
+}
+
+// DownLoadBattles dowloads from linkes battle concurrently.
+// Html file is saved at a defined by the browser.
+func DownLoadBattles(links []BattleLink, division int) {
+
+	executeDL := func(links []BattleLink,
+		ch chan int) {
+		downLoadBattles(links, ch)
+	}
+	splitLinks := divideLinks(links, division)
+	channels := make([]chan int, division)
+	for index := range splitLinks {
+		channels[index] = make(chan int, 1)
+		go executeDL(splitLinks[index], channels[index])
+	}
+	for ch := range channels {
+		<-channels[ch]
+	}
+}
+
+func downLoadBattles(links []BattleLink, ch chan int) {
+	room := NewBattleRoom()
+	defer room.Browser.Stop()
+
+	for index := range links {
+		room.Browser.NavigatePage(links[index].URL)
+		room.Browser.ClickElement(room.Browser.FindByXPath("/html/body/div[4]/div[5]/div/p[1]/span/a"))
+	}
+	doNothing := func() error { return nil }
+	room.Browser.ExecuteWithWait(doNothing)
+	defer close(ch)
+}
+
+func divideLinks(links []BattleLink, division int) [][]BattleLink {
+	var chunks [][]BattleLink
+	sliceSize := len(links)
+	size := int(math.Ceil(float64(sliceSize) / float64(division))) // 10/4 = 2.25 > 3
+
+	for i := 0; i < sliceSize; i += size {
+		end := i + size
+		if sliceSize < end {
+			end = sliceSize
+		}
+		chunks = append(chunks, links[i:end])
+	}
+
+	return chunks
 }
