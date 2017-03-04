@@ -1,25 +1,12 @@
 package main
 
-import (
-	"log"
-
-	"github.com/sclevine/agouti"
-)
+import "scrape-sd.local/browser"
 
 func main() {
-	driver := agouti.ChromeDriver()
-	if err := driver.Start(); err != nil {
-		log.Fatalf("Failed to start driver:%v", err)
-	}
-	defer driver.Stop()
+	browser := browser.CreateChrome()
+	defer browser.Stop()
 
-	page, err := driver.NewPage(agouti.Browser("chrome"))
-	if err != nil {
-		log.Fatalf("Failed to open page:%v", err)
-	}
+	browser.NavigatePage("http://play.pokemonshowdown.com/battles")
 
-	if err := page.Navigate("http://play.pokemonshowdown.com/battles"); err != nil {
-		log.Fatalf("Failed to navigate:%v", err)
-	}
-	page.Screenshot("./.debug/debug.jpg")
+	browser.Screenshot("./.debug/debug.jpg")
 }
