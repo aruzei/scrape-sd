@@ -1,9 +1,6 @@
 package main
 
-import (
-	"scrape-sd.local/showdown"
-	"scrape-sd.local/util"
-)
+import "scrape-sd.local/showdown"
 
 func main() {
 	battleRoom := showdown.NewBattleRoom()
@@ -12,7 +9,4 @@ func main() {
 	links := battleRoom.Scrape()
 
 	showdown.DownLoadBattles(links, 8)
-
-	util.FlushAsCSV(links, "./.debug/links.csv")
-	battleRoom.Browser.Screenshot("./.debug/debug.jpg")
 }
