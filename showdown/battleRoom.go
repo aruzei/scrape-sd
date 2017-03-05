@@ -2,10 +2,10 @@ package showdown
 
 import (
 	"math"
+	"scrape-sd/browser"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"scrape-sd.local/browser"
 )
 
 type BattleRoom struct {
@@ -17,7 +17,7 @@ func NewBattleRoom() *BattleRoom {
 	doNothing := func() error { return nil }
 	browser.ExecuteWithWait(doNothing)
 
-	browser.NavigatePage("http://play.pokemonshowdown.com/battles")
+	browser.NavigatePage(battleULR)
 
 	room := BattleRoom{
 		Browser: &browser}
@@ -64,15 +64,15 @@ func DownLoadBattles(links []BattleLink, division int) {
 
 func downLoadBattles(links []BattleLink, ch chan int) {
 	room := NewBattleRoom()
-	defer room.Browser.Stop()
 
 	for index := range links {
 		room.Browser.NavigatePage(links[index].URL)
+		room.Browser.WaitSeconds(120)
 		room.Browser.ClickElement(room.Browser.FindByXPath("/html/body/div[4]/div[5]/div/p[1]/span/a"))
 	}
-	doNothing := func() error { return nil }
-	room.Browser.ExecuteWithWait(doNothing)
+	room.Browser.WaitSeconds(30)
 	defer close(ch)
+	defer room.Browser.Destroy()
 }
 
 func divideLinks(links []BattleLink, division int) [][]BattleLink {

@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"scrape-sd.local/showdown"
+	"scrape-sd/showdown"
 )
 
 // FlushAsCSV flushes []showdown.BattleLink as CSV file.

@@ -31,6 +31,14 @@ func (browser *Browser) ExecuteWithWait(f func() error) error {
 	return f()
 }
 
+//WaitSeconds wait seconds
+func (browser *Browser) WaitSeconds(seconds int) error {
+	for index := 0; index < seconds; index++ {
+		time.Sleep(time.Duration(1 * time.Second))
+	}
+	return nil
+}
+
 // ClickElement clicks a specified element with three second wait.
 func (browser *Browser) ClickElement(element *agouti.Selection) error {
 	return browser.ExecuteWithWait(element.Click)

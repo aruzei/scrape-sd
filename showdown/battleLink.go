@@ -3,7 +3,6 @@ package showdown
 import (
 	"strings"
 
-	"crawl-sd.git/sd"
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -28,7 +27,7 @@ func newBattleLink(s *goquery.Selection) *BattleLink {
 	url, _ := s.Attr("href")
 	text := s.Text()
 	return &BattleLink{
-		URL:     sd.RootURL + url,
+		URL:     rootURL + url,
 		Text:    text,
 		IsValid: strings.Contains(url, "/battle-gen7vgc2017")}
 }
