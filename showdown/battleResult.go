@@ -2,6 +2,7 @@ package showdown
 
 import (
 	"io/ioutil"
+	"sort"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -56,6 +57,9 @@ func (log battleLog) createTeams() []Team {
 		}
 	}
 	var teams []Team
+	sort.Strings(pkmns1)
+	sort.Strings(pkmns2)
+
 	teams = append(teams, newTeam("p1", pkmns1))
 	teams = append(teams, newTeam("p2", pkmns2))
 
