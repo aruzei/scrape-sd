@@ -30,9 +30,9 @@ func (room *BattleRoom) Scrape() []BattleLink {
 
 	browser := room.Browser
 
-	browser.ClickElement(browser.FindByXPath("/html/body/div[4]/div/div/p[2]/button"))
-	browser.ClickElement(browser.FindByXPath("/html/body/div[5]/ul[1]/li[22]/button"))
-	browser.ClickElement(browser.FindByXPath("/html/body/div[4]/div/div/label/input"))
+	browser.ClickElement(browser.FindByXPath(xpath_battle_Format))
+	browser.ClickElement(browser.FindByXPath(xpath_format_VGC2017))
+	browser.ClickElement(browser.FindByXPath(xpath_EOLPlus1300))
 
 	doNothing := func() error { return nil }
 	browser.ExecuteWithWait(doNothing)
@@ -52,7 +52,8 @@ func DownLoadBattles(links []BattleLink, division int) {
 		downLoadBattles(links, ch)
 	}
 	splitLinks := divideLinks(links, division)
-	channels := make([]chan int, division)
+	totalChannels := int32(math.Min(float64(division), float64(len(links))))
+	channels := make([]chan int, totalChannels)
 	for index := range splitLinks {
 		channels[index] = make(chan int, 1)
 		go executeDL(splitLinks[index], channels[index])
@@ -67,10 +68,10 @@ func downLoadBattles(links []BattleLink, ch chan int) {
 
 	for index := range links {
 		room.Browser.NavigatePage(links[index].URL)
-		room.Browser.WaitSeconds(120)
-		room.Browser.ClickElement(room.Browser.FindByXPath("/html/body/div[4]/div[5]/div/p[1]/span/a"))
+		room.Browser.WaitSeconds(30)
+		room.Browser.ClickElement(room.Browser.FindByXPath(xpath_download_battle))
 	}
-	room.Browser.WaitSeconds(30)
+	room.Browser.WaitSeconds(10)
 	defer close(ch)
 	defer room.Browser.Destroy()
 }

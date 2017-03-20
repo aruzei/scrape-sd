@@ -47,9 +47,9 @@ func TestNewBattleResult() {
 	fmt.Println(testNewBattleResult("./test/showdown/dummy_battle2.html", result2))
 }
 
-func testNewBattleResult(html string, expected showdown.Result) bool {
+func testNewBattleResult(htmlFilePath string, expected showdown.Result) bool {
 
-	result := showdown.NewResult(html)
+	result := showdown.NewResult(htmlFilePath)
 	return isPlayerSame(result.Winner, expected.Winner) &&
 		isPlayerSame(result.Loser, expected.Loser)
 }
