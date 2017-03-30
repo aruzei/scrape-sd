@@ -1,7 +1,10 @@
 package showdown
 
 import (
+	"encoding/csv"
 	"io/ioutil"
+	"log"
+	"os"
 	"sort"
 	"strings"
 
@@ -22,6 +25,25 @@ type Player struct {
 type Team struct {
 	ID       string
 	Pokemons []string
+}
+
+func failOnError(err error) {
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
+}
+func (result *Result) Dump(filePath string) {
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE, 0600)
+	failOnError(err)
+	defer file.Close()
+	writer := csv.NewWriter(file)
+	winner := []string{result.Winner.ID, result.Winner.Rate}
+	winner = append(winner, result.Winner.Team.Pokemons...)
+	loser := []string{result.Loser.ID, result.Loser.Rate}
+	loser = append(loser, result.Loser.Team.Pokemons...)
+	writer.Write(winner)
+	writer.Write(loser)
+	writer.Flush()
 }
 
 func NewResult(html string) Result {
