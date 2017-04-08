@@ -31,7 +31,7 @@ func (room *BattleRoom) Scrape() []BattleLink {
 	browser := room.Browser
 
 	browser.ClickElement(browser.FindByXPath(xpath_battle_Format))
-	browser.ClickElement(browser.FindByXPath(xpath_format_VGC2017))
+	browser.ClickElement(browser.FindByButton(label_format_VGC2017))
 	browser.ClickElement(browser.FindByXPath(xpath_EOLPlus1300))
 
 	doNothing := func() error { return nil }
