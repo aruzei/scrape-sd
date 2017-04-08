@@ -43,28 +43,8 @@ func (room *BattleRoom) Scrape() []BattleLink {
 	return scrapeBattleLinks(doc)
 }
 
-// DownLoadBattles dowloads from linkes battle concurrently.
-// Html file is saved at a defined by the browser.
-func DownLoadBattles(links []BattleLink, division int) {
-
-	executeDL := func(links []BattleLink,
-		ch chan int) {
-		downLoadBattles(links, ch)
-	}
-	splitLinks := divideLinks(links, division)
-	totalChannels := int32(math.Min(float64(division), float64(len(links))))
-	channels := make([]chan int, totalChannels)
-	for index := range splitLinks {
-		channels[index] = make(chan int, 1)
-		go executeDL(splitLinks[index], channels[index])
-	}
-	for ch := range channels {
-		<-channels[ch]
-	}
-}
-
-func downLoadBattles(links []BattleLink, ch chan int) {
-	room := NewBattleRoom()
+func (room *BattleRoom) executeDownLoad(links []BattleLink, ch chan int) {
+	// room := NewBattleRoom()
 
 	for index := range links {
 		room.Browser.NavigatePage(links[index].URL)
@@ -73,7 +53,6 @@ func downLoadBattles(links []BattleLink, ch chan int) {
 	}
 	room.Browser.WaitSeconds(10)
 	defer close(ch)
-	defer room.Browser.Destroy()
 }
 
 func divideLinks(links []BattleLink, division int) [][]BattleLink {

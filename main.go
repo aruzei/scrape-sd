@@ -7,12 +7,22 @@ import (
 )
 
 func main() {
-	battleRoom := showdown.NewBattleRoom()
-	defer battleRoom.Browser.Stop()
+	getLinks := func() []showdown.BattleLink {
+		battleRoom := showdown.NewBattleRoom()
+		defer battleRoom.Browser.Stop()
+		return battleRoom.Scrape()
+	}
+	downLoad := func(links []showdown.BattleLink, downLoader *showdown.DownLoader) {
+		downLoader.DownLoadBattles(links)
+	}
 
-	links := battleRoom.Scrape()
+	downLoader := showdown.NewDownLoader(4)
+	defer downLoader.DestroyBrowsers()
 
-	showdown.DownLoadBattles(links, 4)
+	for index := 0; index < 2; index++ {
+		links := getLinks()
+		downLoad(links, &downLoader)
+	}
 
 }
 func test() {
